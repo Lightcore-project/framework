@@ -1,10 +1,18 @@
-pub trait HashInterface {
-    type Output;
+use std::fmt::Debug;
+use serde::{Serialize, Deserialize};
+use hex::FromHex;
+use hex::ToHex;
+
+pub trait DeserializeDe: for <'de> Deserialize<'de> {}
+impl<T: ?Sized> DeserializeDe for T where T: for<'de> Deserialize<'de> {}
+
+pub trait Hasher {
+    type Output: Debug + Serialize + DeserializeDe + ToHex + FromHex;
 
     fn new() -> Self;
     
-    fn update(&self, data: &Vec<u8>, size: u64);
+    fn write(&self, data: &Vec<u8>);
 
-    fn digest(self) -> Self::Output;
+    fn finish(self) -> Self::Output;
 }
 

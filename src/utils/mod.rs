@@ -1,3 +1,4 @@
 mod hash;
 
-pub use hash::HashInterface;
+pub use hash::Hasher;
+

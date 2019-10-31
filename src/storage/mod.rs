@@ -1,3 +1,3 @@
 mod traits;
 
-pub use traits::StorageInterface;
+pub use traits::Storage;
