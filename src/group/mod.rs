@@ -1,4 +1,4 @@
 mod traits;
 
-pub use traits::GroupInterface;
+pub use traits::Grouping;
 
