@@ -1,4 +1,4 @@
-pub trait NetworkInterface {
+pub trait Network {
     type NodeId;
     
     fn send(&self, id: Self::NodeId, data: Vec<u8>);

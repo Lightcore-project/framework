@@ -1,3 +1,3 @@
 mod traits;
 
-pub use traits::NetworkInterface;
+pub use traits::Network;
