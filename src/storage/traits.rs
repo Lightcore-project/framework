@@ -4,17 +4,13 @@ use std::convert::AsRef;
 pub trait Storage {
     type Error;
 
-    fn field<F>(&mut self, field: F)
-        where F: AsRef<[u8]>;
+    fn field(&mut self, field: impl AsRef<[u8]>);
 
-    fn set<K>(&mut self, key: K, value: Vec<u8>) -> Result<Option<Vec<u8>>, Self::Error>
-        where K: AsRef<[u8]>;
+    fn set(&mut self, key: impl AsRef<[u8]>, value: Vec<u8>) -> Result<Option<Vec<u8>>, Self::Error>;
 
-    fn get<K>(&mut self, key: K) -> Result<Option<Vec<u8>>, Self::Error>
-        where K: AsRef<[u8]>;
+    fn get(&mut self, key: impl AsRef<[u8]>) -> Result<Option<Vec<u8>>, Self::Error>;
 
-    fn del<K>(&mut self, key: K) -> Result<Option<Vec<u8>>, Self::Error>
-        where K: AsRef<[u8]>;
+    fn del(&mut self, key: impl AsRef<[u8]>) -> Result<Option<Vec<u8>>, Self::Error>;
 }
 
 #[cfg(test)]
@@ -38,11 +34,11 @@ mod tests {
     impl Storage for SledStorage {
         type Error = sled::Error;
 
-        fn field<F>(&mut self, field: F) where F: AsRef<[u8]> {
+        fn field(&mut self, field: impl AsRef<[u8]>) {
             println!("{}", field.encode_hex::<String>());
         }
 
-        fn set<K>(&mut self, key: K, value: Vec<u8>) -> Result<Option<Vec<u8>>, Self::Error> where K: AsRef<[u8]> {
+        fn set(&mut self, key: impl AsRef<[u8]>, value: Vec<u8>) -> Result<Option<Vec<u8>>, Self::Error> {
             let r = self.db.insert(key, value)?;
             match r {
                 Some(_value) => {
@@ -52,7 +48,7 @@ mod tests {
             }
         }
 
-        fn get<K>(&mut self, key: K) -> Result<Option<Vec<u8>>, Self::Error> where K: AsRef<[u8]> {
+        fn get(&mut self, key: impl AsRef<[u8]>) -> Result<Option<Vec<u8>>, Self::Error> {
             let r = self.db.get(key)?;
             match r {
                 Some(_value) => {
@@ -63,7 +59,7 @@ mod tests {
         }
 
 
-        fn del<K>(&mut self, key: K) -> Result<Option<Vec<u8>>, Self::Error> where K: AsRef<[u8]> {
+        fn del(&mut self, key: impl AsRef<[u8]>) -> Result<Option<Vec<u8>>, Self::Error> {
             let r = self.db.remove(key)?;
             match r {
                 Some(_value) => {
