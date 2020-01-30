@@ -11,7 +11,7 @@ impl<T: ?Sized> DeserializeDe for T where T: for<'de> Deserialize<'de> {}
 pub trait Hasher: Default {
     type Output: Debug + Serialize + DeserializeDe + ToHex + FromHex + PartialEq;
 
-    fn write<B>(&mut self, data: B) where B: AsRef<[u8]>;
+    fn write(&mut self, data: impl AsRef<[u8]>);
 
     fn finish(self) -> Self::Output;
 }
@@ -21,7 +21,7 @@ mod tests {
     use tiny_keccak::Sha3;
     use tiny_keccak::Hasher;
 
-    struct SHA3 {
+    pub struct SHA3 {
         state: Sha3,
     }
 
@@ -34,7 +34,7 @@ mod tests {
     impl super::Hasher for SHA3 {
         type Output = [u8; 32];
 
-        fn write<B>(&mut self, data: B) where B: AsRef<[u8]> {
+        fn write(&mut self, data: impl AsRef<[u8]>) {
             self.state.update(data.as_ref());
         }
 
