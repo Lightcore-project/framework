@@ -3,7 +3,7 @@ use crate::utils::Hasher;
 use hex::ToHex;
 use crate::storage::Storage;
 
-pub trait Validater {
+pub trait Validater: Default {
 
     fn is_ready(&self) -> bool;
 
@@ -12,11 +12,11 @@ pub trait Validater {
     fn validate(&self, data: &Vec<u8>) -> bool;
 }
 
-pub struct ValidaterExecutor<V: Validater + Default> {
+pub struct ValidaterExecutor<V: Validater> {
     validaters: HashMap<String, V>,
 }
 
-impl<V: Validater + Default> ValidaterExecutor<V> {
+impl<V: Validater> ValidaterExecutor<V> {
     pub fn new() -> Self {
         let validaters = HashMap::new();
         ValidaterExecutor {
@@ -24,7 +24,19 @@ impl<V: Validater + Default> ValidaterExecutor<V> {
         }
     }
 
-    pub fn validate<H, S>(&mut self, txid: &H::Output, index: u64, data: &Vec<u8>, storage: &S) -> bool where H: Hasher, S: Storage {
+    pub fn validate<H>(&mut self, txid: &H::Output, index: u64, code: &Vec<u8>, data: &Vec<u8>) 
+        where H: Hasher,
+    {
+        let hex_txid = txid.encode_hex::<String>();
+        let key = format!("{}", format_args!("code-{}-{}", hex_txid, index));
+        let checkers = &self.validaters;
+        match checkers.get(&key) {
+            Some(validater) => validater.validate(data)
+        }
+        
+    }
+
+    pub fn _validate<H, S>(&mut self, txid: &H::Output, index: u64, data: &Vec<u8>, storage: &S) -> bool where H: Hasher, S: Storage {
         let hex_txid = txid.encode_hex::<String>();
         let key = format!("{}", format_args!("code-{}-{}", hex_txid, index));
 
@@ -48,7 +60,6 @@ impl<V: Validater + Default> ValidaterExecutor<V> {
                         false
                     }
                 }
-                
             }
         }
     }

@@ -1,3 +1,4 @@
+//! the trait for network
 pub trait Network {
     type NodeId;
     
