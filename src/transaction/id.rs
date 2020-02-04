@@ -101,7 +101,7 @@ mod tests {
     use serde::Serialize;
     use serde::Deserialize;
     use bytes::BytesMut;
-    use crate::protocol::{ FromBuffer, ToBuffer, BufferSize, Buf, BufMut };
+    use crate::protocol::{ FromBuffer, ToBuffer, BufferSize, Buf };
 
     #[derive(Serialize,Deserialize, Debug)]
     struct Test {
