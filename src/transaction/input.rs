@@ -6,10 +6,10 @@ use crate::protocol::{ FromBuffer, ToBuffer, BufferSize, Buf, BufMut };
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input <Id: Txid> {
-    txid: NtId<Id>,
-    n: u64,
-    capacity: u64,
-    args: Vec<u8>,
+    pub txid: NtId<Id>,
+    pub n: u64,
+    pub capacity: u64,
+    pub args: Vec<u8>,
 }
 
 impl<Id: Txid> Input<Id> {
@@ -59,7 +59,7 @@ impl<Id: Txid> FromBuffer for Input<Id> {
 #[cfg(test)]
 mod tests {
     use super::Input;
-    use crate::protocol::{ FromBuffer, ToBuffer, BufferSize };
+    use crate::protocol::{ BufferSize };
 
     #[test]
     fn test_all() {

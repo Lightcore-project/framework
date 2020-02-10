@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let state = SHA3::default();
+        let _state = SHA3::default();
 
     }
 }
