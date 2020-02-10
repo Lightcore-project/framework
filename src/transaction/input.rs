@@ -1,7 +1,8 @@
 use serde::{ Serialize, Deserialize };
+use std::convert::TryInto;
 
 use super::id::{ Txid, NtId };
-use crate::protocol::{ FromBuffer, ToBuffer, Buf, BufMut };
+use crate::protocol::{ FromBuffer, ToBuffer, BufferSize, Buf, BufMut };
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Input <Id: Txid> {
@@ -22,47 +23,51 @@ impl<Id: Txid> Input<Id> {
     }
 }
 
-/* impl<Id: Txid> ToBuffer for Input<Id> { */
-    // fn serialize_buffer(&self, buffer: &mut impl BufMut) {
-    //     self.txid.serialize_buffer(buffer);
-    //     buffer.put_u64(self.n);
-    //     buffer.put_u64(self.capacity);
-    //     buffer.put_slice(self.args.as_ref());
-    // }
-    //
-    // fn buffer_size(&self) -> usize {
-    //     self.txid.buffer_size() + 16 + self.args.len()
-    // }
-/* } */
+impl<Id: Txid> ToBuffer for Input<Id> {
+    fn buffer_dump(&self, buffer: &mut impl BufMut) {
+        self.txid.buffer_dump(buffer);
+        buffer.put_u64(self.n);
+        buffer.put_u64(self.capacity);
+        buffer.put_slice(self.args.as_ref());
+    }
+}
 
-/* impl<Id: Txid> protocol::Deserialize for Input<Id> { */
-    // fn deserialize(bytes: &mut impl Buf) -> Self {
-    //     let mut id = Id::default();
-    //     bytes.copy_to_slice(id.as_mut());
-    //     NtId::new(id)
-    // }
-    //
-    // fn size(_bytes: &mut impl Buf) -> usize {
-    //     size_of::<Id>()
-    // }
-/* } */
+impl<Id: Txid> BufferSize for Input<Id> {
+    fn buffer_size(&self) -> usize {
+        let txid_len: u64 = self.txid.buffer_size().try_into().unwrap();
+        let r = txid_len + 8 + self.capacity;
+        r.try_into().unwrap()
+    }
+}
 
+impl<Id: Txid> FromBuffer for Input<Id> {
+    fn parse_buffer(bytes: &mut impl Buf) -> Self {
+        let txid = NtId::parse_buffer(bytes);
+        let n = bytes.get_u64();
+        let capacity = bytes.get_u64();
+        let mut args = Vec::with_capacity(capacity.try_into().unwrap());
+        bytes.copy_to_slice(args.as_mut());
+        Input {
+            txid,
+            n,
+            capacity,
+            args
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::Input;
+    use crate::protocol::{ FromBuffer, ToBuffer, BufferSize };
 
     #[test]
-    fn test_all() -> serde_json::Result<()> {
+    fn test_all() {
         let txid = [0u8;32];
         let input = Input::new(txid, 0, 0, Vec::new());
-        let s = serde_json::to_string(&input)?;
-        println!("L: {}", s);
+        let length = input.buffer_size();
+        println!("L: {}", length);
 
-        // let ss = r#"{"txid":"FFFFFFFFFF","n":1,"capacity":1,"args": "FFFFFFFFFF"}"#;
-        let r : Input<Vec<u8>> = serde_json::from_str(&s)?;
-        println!("debug is : {:?}", r);
-        Ok(())
     }
 
 }
