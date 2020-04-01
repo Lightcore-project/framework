@@ -13,6 +13,7 @@
 
 mod error;
 pub mod prelude;
+pub mod protocol;
 pub mod transaction;
 
-pub use error::Error;
+pub use error::Result;

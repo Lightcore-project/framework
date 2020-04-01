@@ -1,6 +1,7 @@
 use super::in_out::{Input, Output};
 use crate::prelude::HashValue;
-use crate::Error;
+use crate::protocol::transaction::Transaction as ProtoTransaction;
+use crate::{error::LightcoreError, Result};
 
 pub struct Transaction<Id: HashValue> {
     pub version: u64,
@@ -12,7 +13,20 @@ pub struct Transaction<Id: HashValue> {
 }
 
 impl<Id: HashValue> Transaction<Id> {
-    pub fn balance(&self) -> Result<(), Error> {
+    pub fn from_proto(bytes: &[u8]) -> Result<Self> {
+        let pt: ProtoTransaction = protobuf::parse_from_bytes(bytes)?;
+        let t = Transaction {
+            version: 0,
+            txid: [0u8; 32],
+            n_outputs: 0,
+            n_inputs: 0,
+            inputs: Vec::new(),
+            outputs: Vec::new(),
+        };
+        Ok(t)
+    }
+
+    pub fn balance(&self) -> Result<()> {
         let mut input_len = 0;
         let mut output_len = 0;
 
@@ -27,7 +41,7 @@ impl<Id: HashValue> Transaction<Id> {
         if input_len == output_len {
             Ok(())
         } else {
-            Err(Error::BalanceError)
+            Err(LightcoreError::BalanceError)
         }
     }
 }

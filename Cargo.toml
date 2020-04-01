@@ -11,12 +11,15 @@ serde = { version = "1.0", features = ["derive"] }
 hex = "0.4"
 bytes = "0.5.4"
 async-trait = "0.1"
-# bytes_hex = { path = "bytes_hex" }
+protobuf = { version = "2", features = ["with-bytes", "serde"] }
 
 [dev-dependencies]
 serde_json = "1.0"
 tiny-keccak = { version = "2.0.0", features = ["sha3"] }
 sled = "0.30.3"
+
+[build-dependencies]
+protoc-rust = "2.0"
 
 [dev-dependencies.async-std]
 version = "1.0.0"

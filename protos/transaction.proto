@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+message Input {
+    bytes  txid = 1;
+    uint64 n = 2;
+    uint64 capacity = 3;
+    bytes  args = 4;
+}
+
+message Script {
+    bytes  txid = 1;
+    uint64 n = 2;
+}
+
+message Output {
+    uint64 capacity = 1;
+    bytes  data = 2;
+    oneof script_oneof {
+        Script script = 3;
+    }
+}
+
+message TranscationNonId {
+    uint64 version = 1;
+    uint64 n_inputs = 2;
+    uint64 n_outputs = 3;
+    repeated Input inputs = 4;
+    repeated Output outputs = 5;
+}
+
+message Transaction {
+    bytes txid = 1;
+    TranscationNonId transcation = 2;
+}
+
