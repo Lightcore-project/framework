@@ -10,7 +10,7 @@ impl<T: ?Sized> DeserializeDe for T where T: for<'de> Deserialize<'de> {}
 
 pub trait HashValue = Debug + Serialize + DeserializeDe + ToHex + FromHex + PartialEq;
 
-pub trait Hasher: Default {
+pub trait Hasher {
     type Output: HashValue;
 
     fn update(&mut self, data: impl AsRef<[u8]>);

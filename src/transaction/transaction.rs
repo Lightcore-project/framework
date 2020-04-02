@@ -1,18 +1,19 @@
 use super::in_out::{Input, Output};
-use crate::prelude::HashValue;
-use crate::Error;
+use crate::error::FrameworkError;
+use crate::prelude::Hasher;
+use crate::Result;
 
-pub struct Transaction<Id: HashValue> {
+pub struct Transaction<H: Hasher> {
     pub version: u64,
-    pub txid: Id,
+    pub txid: H::Output,
     pub n_inputs: u64,
     pub n_outputs: u64,
-    pub inputs: Vec<Input<Id>>,
-    pub outputs: Vec<Output<Id>>,
+    pub inputs: Vec<Input<H>>,
+    pub outputs: Vec<Output<H>>,
 }
 
-impl<Id: HashValue> Transaction<Id> {
-    pub fn balance(&self) -> Result<(), Error> {
+impl<H: Hasher> Transaction<H> {
+    pub fn balance(&self) -> Result<()> {
         let mut input_len = 0;
         let mut output_len = 0;
 
@@ -27,7 +28,7 @@ impl<Id: HashValue> Transaction<Id> {
         if input_len == output_len {
             Ok(())
         } else {
-            Err(Error::BalanceError)
+            Err(FrameworkError::BalanceError)
         }
     }
 }

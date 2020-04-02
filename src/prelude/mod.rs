@@ -1,6 +1,7 @@
 mod hash;
 mod network;
 mod storage;
+mod validator;
 
 pub use hash::HashValue;
 pub use hash::Hasher;
