@@ -1,24 +1,17 @@
+use crate::prelude::Validator;
 use crate::storage::Storage;
 use crate::utils::Hasher;
 use hex::ToHex;
 use std::collections::HashMap;
 
-pub trait Validater: Default {
-    fn is_ready(&self) -> bool;
-
-    fn load(&self, code: &Vec<u8>) -> bool;
-
-    fn validate(&self, data: &Vec<u8>) -> bool;
+pub struct ValidatorExecutor<V: Validator> {
+    validators: HashMap<String, V>,
 }
 
-pub struct ValidaterExecutor<V: Validater> {
-    validaters: HashMap<String, V>,
-}
-
-impl<V: Validater> ValidaterExecutor<V> {
+impl<V: Validator> ValidatorExecutor<V> {
     pub fn new() -> Self {
-        let validaters = HashMap::new();
-        ValidaterExecutor { validaters }
+        let validators = HashMap::new();
+        ValidatorExecutor { validators }
     }
 
     pub fn validate<H>(&mut self, txid: &H::Output, index: u64, code: &Vec<u8>, data: &Vec<u8>)

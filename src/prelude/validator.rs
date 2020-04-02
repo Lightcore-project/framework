@@ -1,5 +1,4 @@
 use crate::Result;
-use async_trait::async_trait;
 use core::convert::AsRef;
 
 pub trait Validator {
